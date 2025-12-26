@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>TORO • Departamentos — Ficha (Mock)</title>
+  <style>
+    :root{
+      --bg:#0b1220; --panel:#0f1b2d; --panel2:#0c1626; --text:#e7edf7; --muted:#a6b2c6;
+      --line:#20324d; --good:#22c55e; --warn:#f59e0b; --bad:#ef4444; --info:#60a5fa;
+      --shadow: 0 10px 30px rgba(0,0,0,.35); --radius: 16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:var(--sans);
+      background: radial-gradient(1000px 560px at 10% -10%, rgba(34,197,94,.18), transparent 60%),
+                  radial-gradient(900px 500px at 110% 0%, rgba(56,189,248,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit; text-decoration:none}
+    .wrap{max-width:1200px; margin:0 auto; padding:24px;}
+    .top{
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      margin-bottom:14px;
+    }
+    .btn{
+      padding:10px 12px; border-radius:12px; border:1px solid var(--line);
+      background: rgba(15,27,45,.65); color:var(--text); cursor:pointer;
+    }
+    .btn.primary{background: rgba(34,197,94,.18); border-color: rgba(34,197,94,.35)}
+    .grid{display:grid; gap:14px}
+    .cols{grid-template-columns: 1.2fr .8fr;}
+    .card{
+      background: linear-gradient(180deg, rgba(15,27,45,.92), rgba(12,22,38,.92));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:14px;
+    }
+    .h1{margin:0; font-size:18px}
+    .muted{color:var(--muted); font-size:12px}
+    .row{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+    .pill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(32,50,77,.8);
+      font-size:12px; color:var(--muted);
+      background: rgba(18,38,63,.55);
+    }
+    .dot{width:8px; height:8px; border-radius:50%}
+    .s-alq .dot{background:var(--good)}
+    .p-ok .dot{background:var(--good)}
+    .p-pen .dot{background:var(--warn)}
+    .kv{display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:12px}
+    .kv .k{color:var(--muted); font-size:12px}
+    .kv .v{font-size:13px}
+    table{width:100%; border-collapse:separate; border-spacing:0; margin-top:10px}
+    th, td{padding:10px; border-bottom:1px solid rgba(32,50,77,.7); font-size:13px}
+    th{color:var(--muted); font-size:12px; text-align:left; background: rgba(12,22,38,.35)}
+    .note{
+      padding:10px; border-radius:14px; border:1px dashed rgba(32,50,77,.9);
+      background: rgba(12,22,38,.35); margin-top:12px; color:var(--muted); font-size:12px;
+    }
+    @media(max-width: 980px){ .cols{grid-template-columns:1fr;} .kv{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <div class="muted"><a href="./index.html">← Volver</a></div>
+        <h1 class="h1">Ficha • Dpto 3B</h1>
+        <div class="muted">Av. Colón 1234 — Córdoba</div>
+      </div>
+      <div class="row">
+        <button class="btn">Editar</button>
+        <button class="btn primary">Registrar Pago</button>
+      </div>
+    </div>
+
+    <div class="grid cols">
+      <div class="card">
+        <div class="row">
+          <span class="pill s-alq"><span class="dot"></span>Alquilado</span>
+          <span class="pill p-ok"><span class="dot"></span>Mes Cobrado</span>
+          <span class="pill"><span class="dot" style="background:#60a5fa"></span>Contrato activo</span>
+        </div>
+
+        <div class="kv">
+          <div>
+            <div class="k">Inquilino</div>
+            <div class="v"><b>Gómez, Laura</b> — 351 555-1234</div>
+          </div>
+          <div>
+            <div class="k">Regla de ajuste</div>
+            <div class="v">Semestral • IPC</div>
+          </div>
+          <div>
+            <div class="k">Contrato</div>
+            <div class="v">01/01/2025 → 31/01/2026</div>
+          </div>
+          <div>
+            <div class="k">Próximo vencimiento</div>
+            <div class="v"><b>27 días</b></div>
+          </div>
+          <div>
+            <div class="k">Monto actual</div>
+            <div class="v"><b>$ 350.000</b></div>
+          </div>
+          <div>
+            <div class="k">Próximo ajuste</div>
+            <div class="v">15/02/2026</div>
+          </div>
+        </div>
+
+        <div class="note">
+          Nota rápida: acá puede vivir un “checklist” para renovación (contacto, nuevo monto, firma, actualización de depósito, etc.).
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h2 style="margin:0; font-size:14px;">Acciones sugeridas</h2>
+          <span class="pill"><span class="dot" style="background:#f59e0b"></span>Prioridad media</span>
+        </div>
+        <div class="note">
+          • Contrato vence en 27 días → iniciar conversación de renovación.<br/>
+          • Preparar cálculo de ajuste (IPC) y propuesta de nuevo monto.<br/>
+          • Confirmar si hay expensas/deudas o pendientes.
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:14px;">Pagos</h2>
+        <span class="muted" style="font-family:var(--mono)">Histórico por período (YYYY-MM)</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Período</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Monto</th>
+            <th>Medio</th>
+            <th>Nota</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025-12</td>
+            <td><span class="pill p-ok"><span class="dot"></span>Cobrado</span></td>
+            <td>05/12/2025</td>
+            <td>$ 350.000</td>
+            <td>Transferencia</td>
+            <td>OK</td>
+          </tr>
+          <tr>
+            <td>2025-11</td>
+            <td><span class="pill p-ok"><span class="dot"></span>Cobrado</span></td>
+            <td>06/11/2025</td>
+            <td>$ 350.000</td>
+            <td>Transferencia</td>
+            <td>OK</td>
+          </tr>
+          <tr>
+            <td>2025-10</td>
+            <td><span class="pill p-ok"><span class="dot"></span>Cobrado</span></td>
+            <td>07/10/2025</td>
+            <td>$ 350.000</td>
+            <td>Efectivo</td>
+            <td>Pagó en mano</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

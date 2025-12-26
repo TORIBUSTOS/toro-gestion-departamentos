@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>TORO • Departamentos — Dashboard (Mock)</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --panel:#0f1b2d;
+      --panel2:#0c1626;
+      --text:#e7edf7;
+      --muted:#a6b2c6;
+      --line:#20324d;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --accent:#22c55e;
+      --chip:#12263f;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:var(--sans);
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(34,197,94,.18), transparent 60%),
+                  radial-gradient(900px 500px at 110% 10%, rgba(56,189,248,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit; text-decoration:none}
+    .wrap{max-width:1200px; margin:0 auto; padding:24px;}
+    .topbar{
+      display:flex; gap:16px; align-items:center; justify-content:space-between;
+      margin-bottom:18px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+    }
+    .logo{
+      width:40px; height:40px; border-radius:12px;
+      background: linear-gradient(135deg, rgba(34,197,94,.95), rgba(56,189,248,.65));
+      box-shadow: var(--shadow);
+    }
+    .brand h1{font-size:16px; margin:0; letter-spacing:.2px}
+    .brand p{margin:0; color:var(--muted); font-size:12px}
+    .actions{display:flex; gap:10px; align-items:center}
+    .btn{
+      padding:10px 12px; border-radius:12px; border:1px solid var(--line);
+      background: rgba(15,27,45,.65); color:var(--text);
+      cursor:pointer;
+    }
+    .btn.primary{background: rgba(34,197,94,.18); border-color: rgba(34,197,94,.35)}
+    .btn:hover{filter:brightness(1.05)}
+    .search{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px; border-radius:12px; border:1px solid var(--line);
+      background: rgba(15,27,45,.65);
+      min-width: 320px;
+    }
+    .search input{
+      width:100%; background:transparent; border:0; outline:none;
+      color:var(--text); font-size:13px;
+    }
+    .grid{
+      display:grid; gap:14px;
+    }
+    .kpis{grid-template-columns: repeat(4, 1fr);}
+    .card{
+      background: linear-gradient(180deg, rgba(15,27,45,.92), rgba(12,22,38,.92));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:14px;
+    }
+    .kpi .label{color:var(--muted); font-size:12px; margin-bottom:6px}
+    .kpi .value{font-size:22px; font-weight:700}
+    .kpi .delta{font-family:var(--mono); font-size:12px; margin-top:6px; color:var(--muted)}
+    .delta .ok{color:var(--good)} .delta .w{color:var(--warn)} .delta .b{color:var(--bad)}
+    .layout{grid-template-columns: 1.1fr .9fr; align-items:start; margin-top:14px;}
+    .section-title{
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:10px;
+    }
+    .section-title h2{margin:0; font-size:14px}
+    .chips{display:flex; gap:8px; flex-wrap:wrap}
+    .chip{
+      padding:6px 10px; border-radius:999px; border:1px solid var(--line);
+      background: rgba(18,38,63,.65);
+      color:var(--muted); font-size:12px;
+    }
+    .chip.active{color:var(--text); border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.12)}
+    table{
+      width:100%; border-collapse:separate; border-spacing:0;
+      overflow:hidden;
+    }
+    th, td{
+      padding:10px 10px;
+      border-bottom:1px solid rgba(32,50,77,.7);
+      font-size:13px;
+    }
+    th{color:var(--muted); font-size:12px; text-align:left; background: rgba(12,22,38,.35)}
+    tr:hover td{background: rgba(18,38,63,.25)}
+    .pill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:4px 10px; border-radius:999px;
+      border:1px solid rgba(32,50,77,.8);
+      font-size:12px; color:var(--muted);
+      background: rgba(18,38,63,.55);
+    }
+    .dot{width:8px; height:8px; border-radius:50%}
+    .s-alq .dot{background:var(--good)}
+    .s-vac .dot{background:var(--warn)}
+    .s-ref .dot{background:#60a5fa}
+    .p-ok .dot{background:var(--good)}
+    .p-pen .dot{background:var(--warn)}
+    .p-mor .dot{background:var(--bad)}
+    .link{color: rgba(56,189,248,.95)}
+    .alert{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:10px; border-radius:14px; border:1px solid rgba(32,50,77,.8);
+      background: rgba(12,22,38,.45);
+      margin-bottom:10px;
+    }
+    .alert .badge{
+      font-family:var(--mono);
+      font-size:11px; padding:4px 8px; border-radius:10px;
+      border:1px solid rgba(32,50,77,.9);
+      background: rgba(18,38,63,.6);
+      color: var(--muted);
+    }
+    .alert .t{font-size:13px; margin:0 0 2px 0}
+    .alert .d{margin:0; font-size:12px; color:var(--muted)}
+    .sev-high{border-color: rgba(239,68,68,.35)}
+    .sev-med{border-color: rgba(245,158,11,.35)}
+    .sev-low{border-color: rgba(34,197,94,.25)}
+    .footer{
+      margin-top:18px; color:var(--muted); font-size:12px;
+      display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    }
+    @media (max-width: 980px){
+      .kpis{grid-template-columns: repeat(2, 1fr);}
+      .layout{grid-template-columns: 1fr;}
+      .search{min-width: unset; width:100%}
+      .actions{flex-wrap:wrap; justify-content:flex-end}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>Departamentos • TORO</h1>
+          <p>Dashboard operativo — estado, pagos y alertas</p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <div class="search" title="Búsqueda rápida por alias, dirección o inquilino">
+          🔎 <input placeholder="Buscar: “3B”, “Alta Gracia”, “Gómez”…"/>
+        </div>
+        <button class="btn">Exportar</button>
+        <a class="btn primary" href="./depto.html">+ Nuevo / Ver Ficha</a>
+      </div>
+    </div>
+
+    <div class="grid kpis">
+      <div class="card kpi">
+        <div class="label">Departamentos</div>
+        <div class="value">12</div>
+        <div class="delta"><span class="ok">▲</span> 9 alquilados • 2 vacíos • 1 refacción</div>
+      </div>
+      <div class="card kpi">
+        <div class="label">Pagos pendientes (mes actual)</div>
+        <div class="value">2</div>
+        <div class="delta"><span class="w">●</span> 1 “pendiente” • 1 “mora”</div>
+      </div>
+      <div class="card kpi">
+        <div class="label">Contratos por vencer (≤ 30 días)</div>
+        <div class="value">1</div>
+        <div class="delta"><span class="w">●</span> Renovación sugerida</div>
+      </div>
+      <div class="card kpi">
+        <div class="label">Ajustes pendientes</div>
+        <div class="value">3</div>
+        <div class="delta"><span class="b">●</span> Requieren confirmación</div>
+      </div>
+    </div>
+
+    <div class="grid layout">
+      <div class="card">
+        <div class="section-title">
+          <h2>Departamentos</h2>
+          <div class="chips">
+            <span class="chip active">Todos</span>
+            <span class="chip">Alquilados</span>
+            <span class="chip">Vacíos</span>
+            <span class="chip">Refacción</span>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Alias</th>
+              <th>Dirección</th>
+              <th>Estado</th>
+              <th>Inquilino</th>
+              <th>Pago Mes</th>
+              <th>Próxima acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a class="link" href="./depto.html">Dpto 3B</a></td>
+              <td>Av. Colón 1234</td>
+              <td><span class="pill s-alq"><span class="dot"></span>Alquilado</span></td>
+              <td>Gómez, L.</td>
+              <td><span class="pill p-ok"><span class="dot"></span>Cobrado</span></td>
+              <td>Ajuste en 45 días</td>
+            </tr>
+            <tr>
+              <td><a class="link" href="./depto.html">Casa AG</a></td>
+              <td>Alta Gracia, Centro</td>
+              <td><span class="pill s-vac"><span class="dot"></span>Vacío</span></td>
+              <td>—</td>
+              <td><span class="pill"><span class="dot" style="background:#64748b"></span>—</span></td>
+              <td>Vacío hace 18 días</td>
+            </tr>
+            <tr>
+              <td><a class="link" href="./depto.html">Dpto 1A</a></td>
+              <td>J. M. de Rosas 455</td>
+              <td><span class="pill s-alq"><span class="dot"></span>Alquilado</span></td>
+              <td>Martínez, P.</td>
+              <td><span class="pill p-pen"><span class="dot"></span>Pendiente</span></td>
+              <td>Recordatorio hoy</td>
+            </tr>
+            <tr>
+              <td><a class="link" href="./depto.html">Dpto 2C</a></td>
+              <td>Nueva Córdoba 980</td>
+              <td><span class="pill s-alq"><span class="dot"></span>Alquilado</span></td>
+              <td>Suárez, M.</td>
+              <td><span class="pill p-mor"><span class="dot"></span>Mora</span></td>
+              <td>Llamar / carta 24h</td>
+            </tr>
+            <tr>
+              <td><a class="link" href="./depto.html">Local 5</a></td>
+              <td>Rivadavia 22</td>
+              <td><span class="pill s-ref"><span class="dot"></span>Refacción</span></td>
+              <td>—</td>
+              <td><span class="pill"><span class="dot" style="background:#64748b"></span>—</span></td>
+              <td>Revisar avance</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="section-title">
+          <h2>Alertas</h2>
+          <span class="chip active">Hoy</span>
+        </div>
+
+        <div class="alert sev-high">
+          <div class="badge">MORA</div>
+          <div>
+            <p class="t"><b>Dpto 2C</b> — pago en mora</p>
+            <p class="d">Período 2025-12 sin registrar. Acción sugerida: contacto + plan de pago.</p>
+          </div>
+        </div>
+
+        <div class="alert sev-med">
+          <div class="badge">VENCE</div>
+          <div>
+            <p class="t"><b>Dpto 3B</b> — contrato vence en 27 días</p>
+            <p class="d">Preparar renovación o aviso. Sugerencia: iniciar contacto esta semana.</p>
+          </div>
+        </div>
+
+        <div class="alert sev-med">
+          <div class="badge">AJUSTE</div>
+          <div>
+            <p class="t"><b>Dpto 1A</b> — ajuste pendiente</p>
+            <p class="d">Regla: semestral IPC. Requiere confirmar nuevo monto.</p>
+          </div>
+        </div>
+
+        <div class="alert sev-low">
+          <div class="badge">VACÍO</div>
+          <div>
+            <p class="t"><b>Casa AG</b> — vacancia 18 días</p>
+            <p class="d">Sugerencia: checklist de publicación + visita + precio.</p>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span>Mock UI — solo referencia visual</span>
+          <span>Tip: este panel se vuelve la “mesa de control” diaria</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
