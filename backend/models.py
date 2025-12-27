@@ -4,14 +4,20 @@ Define las entidades: Departamento, Inquilino, Contrato y Pago.
 """
 from sqlalchemy import (
     Column, Integer, String, Date, DateTime, Text, 
-    Decimal, ForeignKey, Enum, CheckConstraint, UniqueConstraint, Index
+    Numeric, ForeignKey, Enum, CheckConstraint, UniqueConstraint, Index
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from datetime import datetime
+from decimal import Decimal
 import enum
 
-from database import Base
+# Manejar importaciones relativas y absolutas
+try:
+    from .database import Base
+except ImportError:
+    # Si falla la importación relativa, usar absoluta
+    from database import Base
 
 
 # Enums para los estados
@@ -123,11 +129,11 @@ class Contrato(Base):
     )
     fecha_inicio = Column(Date, nullable=False)
     fecha_fin = Column(Date, nullable=False, index=True)
-    monto_inicial = Column(Decimal(10, 2), nullable=False)
-    monto_actual = Column(Decimal(10, 2), nullable=False)
+    monto_inicial = Column(Numeric(10, 2), nullable=False)
+    monto_actual = Column(Numeric(10, 2), nullable=False)
     regla_ajuste = Column(String(255), nullable=True)
     proximo_ajuste_fecha = Column(Date, nullable=True)
-    deposito_garantia = Column(Decimal(10, 2), nullable=True)
+    deposito_garantia = Column(Numeric(10, 2), nullable=True)
     estado = Column(
         Enum(EstadoContrato),
         nullable=False,
@@ -170,7 +176,7 @@ class Pago(Base):
     )
     periodo = Column(String(7), nullable=False, index=True)  # Formato YYYY-MM
     fecha_pago = Column(Date, nullable=True)
-    monto_pagado = Column(Decimal(10, 2), nullable=False)
+    monto_pagado = Column(Numeric(10, 2), nullable=False)
     medio_pago = Column(String(50), nullable=True)
     observacion = Column(Text, nullable=True)
     estado = Column(
