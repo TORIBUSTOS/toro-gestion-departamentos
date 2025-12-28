@@ -7,7 +7,7 @@ from typing import Optional, List
 from datetime import date, datetime
 from decimal import Decimal
 
-from .models import (
+from models import (
     EstadoDepartamento,
     EstadoInquilino,
     EstadoContrato

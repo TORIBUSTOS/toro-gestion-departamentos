@@ -1,35 +1,93 @@
-import { useState } from 'react'
-import { 
-  Home, 
-  Building2, 
-  Users, 
-  FileText, 
-  DollarSign, 
+import { useState, useEffect } from 'react'
+import api from './services/api';
+import {
+  Home,
+  Building2,
+  Users,
+  FileText,
+  DollarSign,
   Settings,
   AlertCircle,
   Clock,
   TrendingUp,
-  CheckCircle2
+  CheckCircle2,
+  X,
+  Save
 } from 'lucide-react'
 
 function App() {
   const [activeMenu, setActiveMenu] = useState('dashboard')
 
   // Datos de ejemplo para KPIs
+  const [departamentos, setDepartamentos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [newDepto, setNewDepto] = useState({
+    alias: '',
+    direccion: '',
+    tipo: 'dpto',
+    estado: 'VACIO',
+    fecha_estado_desde: new Date().toISOString().split('T')[0],
+    notas: ''
+  });
+
+  // Cálculo Dinámico de KPIs
+  const totalDeptos = departamentos.length;
+  const alquilados = departamentos.filter(d => d.estado === 'ALQUILADO').length;
+  const vacios = departamentos.filter(d => d.estado === 'VACIO').length;
+  // El mockup tenía "Pagos", "Contratos", "Ajustes". 
+  // Por ahora simularemos Contratos con Alquilados y Ajustes con un valor fijo o calculado si tuviéramos esa data.
+  // Ajustaremos los KPIs para que reflejen la realidad de los departamentos.
+
   const kpis = [
-    { title: 'Deptos', value: '12', icon: Building2, color: 'bg-blue-500/20 text-blue-400' },
-    { title: 'Pagos', value: '8/12', icon: DollarSign, color: 'bg-green-500/20 text-green-400' },
-    { title: 'Contratos', value: '10', icon: FileText, color: 'bg-purple-500/20 text-purple-400' },
-    { title: 'Ajustes', value: '3', icon: TrendingUp, color: 'bg-orange-500/20 text-orange-400' },
+    { title: 'Deptos', value: totalDeptos, icon: Building2, color: 'bg-blue-500/20 text-blue-400' },
+    { title: 'Pagos', value: alquilados, icon: DollarSign, color: 'bg-emerald-500/20 text-emerald-400' },
+    { title: 'Vacíos', value: vacios, icon: FileText, color: 'bg-purple-500/20 text-purple-400' },
+    { title: 'En Refacción', value: departamentos.filter(d => d.estado === 'REFACCION').length, icon: TrendingUp, color: 'bg-orange-500/20 text-orange-400' },
   ]
 
-  // Datos de ejemplo para la tabla
-  const departamentos = [
-    { id: 1, alias: 'Dpto 3B', direccion: 'Av. Corrientes 1234', estado: 'ALQUILADO', inquilino: 'Juan Pérez' },
-    { id: 2, alias: 'Dpto 5A', direccion: 'Av. Santa Fe 5678', estado: 'VACIO', inquilino: '-' },
-    { id: 3, alias: 'Casa 2', direccion: 'Calle Falsa 123', estado: 'ALQUILADO', inquilino: 'María García' },
-    { id: 4, alias: 'Dpto 1C', direccion: 'Av. Libertador 9012', estado: 'REFACCION', inquilino: '-' },
-  ]
+  // 1. Cargar datos al iniciar
+  useEffect(() => {
+    fetchDepartamentos();
+  }, []);
+
+  const fetchDepartamentos = async () => {
+    try {
+      const response = await api.get('/departamentos');
+      setDepartamentos(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error conectando con TORO Backend:", error);
+      setLoading(false);
+    }
+  };
+
+
+
+  // 2. Función para el botón "+ Nuevo"
+  const handleNuevoDepartamento = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post('/departamentos', newDepto);
+      setShowModal(false);
+      setNewDepto({
+        alias: '',
+        direccion: '',
+        tipo: 'dpto',
+        estado: 'VACIO',
+        fecha_estado_desde: new Date().toISOString().split('T')[0],
+        notas: ''
+      });
+      fetchDepartamentos();
+    } catch (error) {
+      alert("Error al guardar en el servidor: " + (error.response?.data?.detail || error.message));
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewDepto(prev => ({ ...prev, [name]: value }));
+  };
 
   // Datos de ejemplo para alertas
   const alertas = [
@@ -62,8 +120,8 @@ function App() {
   }
 
   const getAlertaColor = (tipo) => {
-    return tipo === 'MORA' 
-      ? 'bg-red-500/20 text-red-400 border-red-500/30' 
+    return tipo === 'MORA'
+      ? 'bg-red-500/20 text-red-400 border-red-500/30'
       : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
   }
 
@@ -82,11 +140,10 @@ function App() {
             <button
               key={item.id}
               onClick={() => setActiveMenu(item.id)}
-              className={`p-3 rounded-lg transition-all ${
-                isActive
-                  ? 'bg-blue-500/20 text-blue-400'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
-              }`}
+              className={`p-3 rounded-lg transition-all ${isActive
+                ? 'bg-blue-500/20 text-blue-400'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                }`}
               title={item.label}
             >
               <Icon size={24} />
@@ -133,11 +190,14 @@ function App() {
             <div className="bg-slate-900/30 backdrop-blur-md border border-slate-800/50 rounded-xl p-6 shadow-xl">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-white">Departamentos</h2>
-                <button className="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-all text-sm">
-                  + Nuevo
+                <button
+                  onClick={() => setShowModal(true)}
+                  className="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-all text-sm flex items-center gap-2"
+                >
+                  <span>+</span> Nuevo
                 </button>
               </div>
-              
+
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
@@ -149,21 +209,35 @@ function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {departamentos.map((depto) => (
-                      <tr
-                        key={depto.id}
-                        className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"
-                      >
-                        <td className="py-4 px-4 text-white font-medium">{depto.alias}</td>
-                        <td className="py-4 px-4 text-slate-300 text-sm">{depto.direccion}</td>
-                        <td className="py-4 px-4">
-                          <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getEstadoColor(depto.estado)}`}>
-                            {depto.estado}
-                          </span>
+                    {loading ? (
+                      <tr>
+                        <td colSpan="4" className="text-center py-8 text-slate-500">
+                          Cargando datos...
                         </td>
-                        <td className="py-4 px-4 text-slate-300 text-sm">{depto.inquilino}</td>
                       </tr>
-                    ))}
+                    ) : departamentos.length === 0 ? (
+                      <tr>
+                        <td colSpan="4" className="text-center py-8 text-slate-500">
+                          No hay departamentos registrados.
+                        </td>
+                      </tr>
+                    ) : (
+                      departamentos.map((depto) => (
+                        <tr
+                          key={depto.id}
+                          className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"
+                        >
+                          <td className="py-4 px-4 text-white font-medium">{depto.alias}</td>
+                          <td className="py-4 px-4 text-slate-300 text-sm">{depto.direccion}</td>
+                          <td className="py-4 px-4">
+                            <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getEstadoColor(depto.estado)}`}>
+                              {depto.estado}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4 text-slate-300 text-sm">{depto.inquilino || '-'}</td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -177,7 +251,7 @@ function App() {
                 <h2 className="text-xl font-semibold text-white">Alertas</h2>
                 <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
               </div>
-              
+
               <div className="space-y-3">
                 {alertas.map((alerta) => {
                   const Icon = getAlertaIcon(alerta.tipo)
@@ -208,6 +282,105 @@ function App() {
           </div>
         </div>
       </main>
+      {/* Modal Nuevo Departamento */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-white">Nuevo Departamento</h3>
+              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-white">
+                <X size={24} />
+              </button>
+            </div>
+
+            <form onSubmit={handleNuevoDepartamento} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-1">Alias / Nombre</label>
+                <input
+                  type="text"
+                  name="alias"
+                  required
+                  value={newDepto.alias}
+                  onChange={handleInputChange}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+                  placeholder="Ej: Dpto 3B"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-1">Dirección</label>
+                <input
+                  type="text"
+                  name="direccion"
+                  required
+                  value={newDepto.direccion}
+                  onChange={handleInputChange}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+                  placeholder="Dirección completa"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-400 mb-1">Tipo</label>
+                  <select
+                    name="tipo"
+                    value={newDepto.tipo}
+                    onChange={handleInputChange}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="dpto">Departamento</option>
+                    <option value="casa">Casa</option>
+                    <option value="cochera">Cochera</option>
+                    <option value="local">Local</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-400 mb-1">Estado Inicial</label>
+                  <select
+                    name="estado"
+                    value={newDepto.estado}
+                    onChange={handleInputChange}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="VACIO">Vacío</option>
+                    <option value="ALQUILADO">Alquilado</option>
+                    <option value="REFACCION">Refacción</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-1">Notas</label>
+                <textarea
+                  name="notas"
+                  value={newDepto.notas}
+                  onChange={handleInputChange}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 h-20 resize-none"
+                  placeholder="Observaciones opcionales..."
+                />
+              </div>
+
+              <div className="flex gap-3 mt-6 pt-4 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition-all font-medium"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-medium flex items-center justify-center gap-2"
+                >
+                  <Save size={18} />
+                  Guardar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

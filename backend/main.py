@@ -7,9 +7,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
 
-from .database import init_db, engine, get_db
-from .models import Base, Departamento, Inquilino, Contrato, EstadoContrato
-from .schemas import (
+from database import init_db, engine, get_db
+from models import Base, Departamento, Inquilino, Contrato, EstadoContrato
+from schemas import (
     DepartamentoCreate,
     DepartamentoUpdate,
     DepartamentoResponse,
@@ -54,8 +54,8 @@ async def startup_event():
     print("📊 Creando tablas de base de datos...")
     init_db()
     print("✅ Base de datos inicializada correctamente")
-    print("🌐 Servidor listo en http://localhost:8000")
-    print("📚 Documentación disponible en http://localhost:8000/docs")
+    print("🌐 Servidor listo en http://localhost:8001")
+    print("📚 Documentación disponible en http://localhost:8001/docs")
 
 
 @app.get("/")
@@ -460,5 +460,5 @@ def eliminar_contrato(contrato_id: int, db: Session = Depends(get_db)):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(app, host="0.0.0.0", port=8001, reload=True)
 
