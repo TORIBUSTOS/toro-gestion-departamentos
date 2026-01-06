@@ -6,10 +6,23 @@ Sistema simple y confiable para gestionar departamentos en alquiler: inventario,
 
 ## 🎯 Objetivos
 
-- **MVP v1 (Operativo)**: CRUD de Departamentos, Inquilinos, Contratos y Pagos con Dashboard básico
-- **MVP v2 (Inteligente)**: Sistema de alertas automáticas (vencimientos, mora, ajustes, vacancia)
+- **MVP v1 (Operativo) ✅**: CRUD de Departamentos, Inquilinos, Contratos y Pagos con Dashboard básico
+- **MVP v2 (Inteligente) ✅**: Sistema de alertas automáticas (vencimientos, mora, ajustes, vacancia)
+- **v2.5 (Automatización Financiera) ✅**: Devengamiento automático de cuotas e intereses por mora.
 - **v3 (Patrimonial)**: Histórico, rendimiento por departamento y registro de gastos
-- **v4 (Automatizaciones)**: Export/Import, recordatorios automáticos e integraciones
+
+## 🤖 Automatizaciones Implementadas
+
+### 1. Devengamiento Automático de Cuotas 📅
+- El sistema detecta el inicio de cada mes.
+- Genera automáticamente los registros de pago pendientes para todos los contratos activos.
+- Evita duplicados inteligentemente.
+
+### 2. Motor de Intereses (Mora) 💸
+- **Vencimiento**: Día 10 de cada mes.
+- **Cálculo**: A partir del día 11, se calcula mora diaria automática.
+- **Tasa**: Configurable (Default: 0.5% diario).
+- **Actualización**: El sistema revisa diariamente los pagos pendientes y actualiza el monto de mora.
 
 ## 🛠️ Stack Tecnológico
 

@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from database import init_db, engine, get_db
-from models import Base, Departamento, Inquilino, Contrato, EstadoContrato
+from models import Base, Departamento, Inquilino, Contrato, Pago, EstadoContrato, EstadoPago
 from schemas import (
     DepartamentoCreate,
     DepartamentoUpdate,
@@ -19,25 +19,22 @@ from schemas import (
     ContratoCreate,
     ContratoUpdate,
     ContratoResponse,
-    ContratoResponseDetallado
+    ContratoResponseDetallado,
+    PagoCreate,
+    PagoResponse,
+    PagoUpdate
 )
 
 # Crear la aplicación FastAPI
-app = FastAPI(
-    title="Sistema de Gestión de Departamentos - TORO",
-    description="API REST para gestionar departamentos, inquilinos, contratos y pagos",
-    version="1.0.0"
-)
+from config import APP_METADATA
+
+# Crear la aplicación FastAPI
+app = FastAPI(**APP_METADATA)
 
 # Configurar CORS para permitir conexiones desde el frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:5174",
-    ],  # Puertos comunes de Vite
+    allow_origins=["*"],  # Permitir todos los orígenes para evitar errores de red
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -50,12 +47,56 @@ async def startup_event():
     Evento que se ejecuta al iniciar la aplicación.
     Crea todas las tablas de la base de datos si no existen.
     """
-    print("🚀 Iniciando Sistema de Gestión de Departamentos TORO...")
+    print("🚀 Iniciando OIKOS (Sistema de Gestión TORO)...")
     print("📊 Creando tablas de base de datos...")
     init_db()
     print("✅ Base de datos inicializada correctamente")
     print("🌐 Servidor listo en http://localhost:8001")
     print("📚 Documentación disponible en http://localhost:8001/docs")
+
+    # Automatización: Generar cuotas del mes actual al iniciar
+    try:
+        from automation_pagos import generar_cuotas_mensuales
+        db = SessionLocal()
+        generados, existentes = generar_cuotas_mensuales(db)
+        print(f"💰 Automatización Pagos: Se generaron {generados} nuevas cuotas ({existentes} ya existían).")
+        
+        # Automatización: Calcular intereses por mora
+        from motor_intereses import calcular_mora_pagos
+        actualizados = calcular_mora_pagos(db)
+        
+        db.close()
+    except Exception as e:
+        print(f"⚠️ Error en automatización de pagos/mora: {e}")
+
+
+@app.post("/pagos/calcular-intereses", tags=["Pagos"])
+def forzar_calculo_intereses(db: Session = Depends(get_db)):
+    """
+    Endpoint para forzar el recálculo de intereses por mora.
+    """
+    from motor_intereses import calcular_mora_pagos
+    actualizados = calcular_mora_pagos(db)
+    return {
+        "message": "Cálculo de intereses finalizado",
+        "pagos_actualizados": actualizados
+    }
+
+@app.post("/pagos/generar-cuotas", tags=["Pagos"])
+def forzar_generacion_cuotas(periodo: str = None, db: Session = Depends(get_db)):
+    """
+    Endpoint para forzar la generación de cuotas de un mes específico (o el actual).
+    Formato periodo: 'YYYY-MM'
+    """
+    from automation_pagos import generar_cuotas_mensuales
+    generados, existentes = generar_cuotas_mensuales(db, periodo)
+    return {
+        "message": "Proceso finalizado",
+        "cuotas_generadas": generados,
+        "cuotas_existentes": existentes,
+        "periodo": periodo or "Mes Actual"
+    }
+
 
 
 @app.get("/")
@@ -64,7 +105,7 @@ async def root():
     Endpoint raíz para verificar que el servidor está funcionando.
     """
     return {
-        "message": "Sistema de Gestión de Departamentos TORO - API",
+        "message": "OIKOS API - Gestión Habitacional y Patrimonial",
         "version": "1.0.0",
         "status": "running",
         "docs": "/docs"
@@ -224,13 +265,13 @@ def crear_inquilino(inquilino: InquilinoCreate, db: Session = Depends(get_db)):
     """
     Crea un nuevo inquilino.
     """
-    # Verificar que el DNI no exista (si se proporciona)
-    if inquilino.dni:
-        existe = db.query(Inquilino).filter(Inquilino.dni == inquilino.dni).first()
+    # Verificar que el DNI/CUIT no exista (si se proporciona)
+    if inquilino.dni_cuit:
+        existe = db.query(Inquilino).filter(Inquilino.dni_cuit == inquilino.dni_cuit).first()
         if existe:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Ya existe un inquilino con el DNI '{inquilino.dni}'"
+                detail=f"Ya existe un inquilino con el DNI/CUIT '{inquilino.dni_cuit}'"
             )
     
     db_inquilino = Inquilino(**inquilino.dict())
@@ -256,16 +297,16 @@ def actualizar_inquilino(
             detail=f"Inquilino con ID {inquilino_id} no encontrado"
         )
     
-    # Verificar DNI único si se está actualizando
-    if inquilino.dni and inquilino.dni != db_inquilino.dni:
+    # Verificar DNI/CUIT único si se está actualizando
+    if inquilino.dni_cuit and inquilino.dni_cuit != db_inquilino.dni_cuit:
         existe = db.query(Inquilino).filter(
-            Inquilino.dni == inquilino.dni,
+            Inquilino.dni_cuit == inquilino.dni_cuit,
             Inquilino.id != inquilino_id
         ).first()
         if existe:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Ya existe un inquilino con el DNI '{inquilino.dni}'"
+                detail=f"Ya existe un inquilino con el DNI/CUIT '{inquilino.dni_cuit}'"
             )
     
     # Actualizar solo los campos proporcionados
@@ -457,6 +498,23 @@ def eliminar_contrato(contrato_id: int, db: Session = Depends(get_db)):
     db.commit()
     return None
 
+
+# ============================================================================
+# ENDPOINTS CRUD - PAGOS
+# ============================================================================
+
+@app.get("/pagos", response_model=List[PagoResponse], tags=["Pagos"])
+def listar_pagos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    pagos = db.query(Pago).offset(skip).limit(limit).all()
+    return pagos
+
+@app.post("/pagos", response_model=PagoResponse, status_code=status.HTTP_201_CREATED, tags=["Pagos"])
+def crear_pago(pago: PagoCreate, db: Session = Depends(get_db)):
+    db_pago = Pago(**pago.dict())
+    db.add(db_pago)
+    db.commit()
+    db.refresh(db_pago)
+    return db_pago
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,0 +1,62 @@
+Querying Pagos...
+Found 6 records.
+Processing Pago 1...
+  Estado (Raw): EstadoPago.COBRADO (Type: <enum 'EstadoPago'>)
+  Monto (Raw): 315303.00 (Type: <class 'decimal.Decimal'>)
+  ❌ Validation FAILED: 2 validation errors for PagoResponse
+monto_expensas
+  Decimal input should be an integer, float, string or Decimal object [type=decimal_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/decimal_type
+monto_servicios
+  Decimal input should be an integer, float, string or Decimal object [type=decimal_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/decimal_type
+Processing Pago 2...
+  Estado (Raw): EstadoPago.COBRADO (Type: <enum 'EstadoPago'>)
+  Monto (Raw): 316303.00 (Type: <class 'decimal.Decimal'>)
+  ❌ Validation FAILED: 2 validation errors for PagoResponse
+monto_expensas
+  Decimal input should be an integer, float, string or Decimal object [type=decimal_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/decimal_type
+monto_servicios
+  Decimal input should be an integer, float, string or Decimal object [type=decimal_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/decimal_type
+Processing Pago 3...
+  Estado (Raw): EstadoPago.COBRADO (Type: <enum 'EstadoPago'>)
+  Monto (Raw): 346000.00 (Type: <class 'decimal.Decimal'>)
+  ❌ Validation FAILED: 2 validation errors for PagoResponse
+monto_expensas
+  Decimal input should be an integer, float, string or Decimal object [type=decimal_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/decimal_type
+monto_servicios
+  Decimal input should be an integer, float, string or Decimal object [type=decimal_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/decimal_type
+Processing Pago 4...
+  Estado (Raw): EstadoPago.COBRADO (Type: <enum 'EstadoPago'>)
+  Monto (Raw): 283942.00 (Type: <class 'decimal.Decimal'>)
+  ❌ Validation FAILED: 2 validation errors for PagoResponse
+monto_expensas
+  Decimal input should be an integer, float, string or Decimal object [type=decimal_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/decimal_type
+monto_servicios
+  Decimal input should be an integer, float, string or Decimal object [type=decimal_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/decimal_type
+Processing Pago 5...
+  Estado (Raw): EstadoPago.COBRADO (Type: <enum 'EstadoPago'>)
+  Monto (Raw): 200000.00 (Type: <class 'decimal.Decimal'>)
+  ❌ Validation FAILED: 2 validation errors for PagoResponse
+monto_expensas
+  Decimal input should be an integer, float, string or Decimal object [type=decimal_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/decimal_type
+monto_servicios
+  Decimal input should be an integer, float, string or Decimal object [type=decimal_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/decimal_type
+Processing Pago 6...
+  Estado (Raw): EstadoPago.COBRADO (Type: <enum 'EstadoPago'>)
+  Monto (Raw): 200000.00 (Type: <class 'decimal.Decimal'>)
+  ❌ Validation FAILED: 2 validation errors for PagoResponse
+monto_expensas
+  Decimal input should be an integer, float, string or Decimal object [type=decimal_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/decimal_type
+monto_servicios
+  Decimal input should be an integer, float, string or Decimal object [type=decimal_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/decimal_type
